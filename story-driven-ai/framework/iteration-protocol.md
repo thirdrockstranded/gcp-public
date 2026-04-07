@@ -9,9 +9,27 @@
 A story is not "done" when code is generated. It is done when all acceptance criteria are verified by automated tests. The iteration protocol defines how that verification works and what happens when it fails.
 
 ```
-Read story → Ask clarifying questions → Plan → Implement on branch
+Smoke test gate → Read story → Ask clarifying questions → Plan → Implement on branch
      → Generate tests → Run tests → Score → Pass? Done. Fail? Iterate.
 ```
+
+---
+
+## Smoke Test Gate
+
+Before beginning implementation on any story, run the existing test suite against the current state of `develop`:
+
+```
+docker compose --profile test run test
+```
+
+**If smoke tests pass:** proceed to story implementation.
+
+**If smoke tests fail:** stop. Report the failures to the developer before touching the story. Infrastructure issues must be resolved at the infrastructure level, not papered over during story implementation.
+
+**Rationale:** Latent infrastructure failures discovered mid-story (broken container builds, version mismatches, host header rejections) block all AC verification and contaminate the session document with out-of-scope debugging. Catching them before implementation begins keeps the story session clean and the session document focused on methodology-relevant observations.
+
+*Added after US-001 (Quiltix case study): two pre-existing infrastructure failures — a Playwright version mismatch and a Vite 5.4 `allowedHosts` enforcement change — blocked all e2e AC verification and required diagnosis before story testing could proceed. See META-1, META-2, META-3 in the US-001 session document.*
 
 ---
 
@@ -103,6 +121,22 @@ The session document includes:
 - **Deviations from the story spec** — what was built differently than specified and why
 - **Blocked ACs** — ACs that could not be satisfied, with explanation
 - **`[META]` flags** — any methodology-level observations (missing spec, ambiguous ACs, story format gaps, model behavior surprises)
+
+---
+
+## Out-of-Scope Fixes During Implementation
+
+When an implementation session surfaces a pre-existing infrastructure failure that blocks AC verification, the AI may fix it autonomously **only if all three conditions are met:**
+
+1. The fix is unambiguously correct and low-risk (not a design decision)
+2. The fix is the minimum change necessary to unblock testing
+3. The fix is documented in the session document under a clearly labeled "Infrastructure Fixes" section, separate from story work
+
+If the fix requires a design decision, or affects more than one file beyond the immediate blocker, stop and report to the developer before proceeding.
+
+**Rationale:** The CLAUDE.md rule "modify files outside story scope — ask first" is correct in the general case. But a broken test container that prevents any AC from being verified is a special case: asking first is impractical when the infrastructure failure itself is what makes reporting difficult. This exception is narrow and must not become a license for scope creep. Every out-of-scope fix must be visible in the session document.
+
+*Added after US-001 (Quiltix case study): CC fixed two infrastructure issues autonomously without asking first — correctly in both cases — but in doing so bent its own rules. The exception above codifies when that behavior is acceptable. See META-4 in the US-001 session document.*
 
 ---
 

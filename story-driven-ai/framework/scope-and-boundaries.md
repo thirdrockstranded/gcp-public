@@ -25,6 +25,8 @@ These concepts are intended to be tool-independent. They should apply whether yo
 - **Developer constitution** — project-level technical preferences (e.g. containerization, unit conventions) that cross-cut all stories and belong at the project level, not inside individual stories
 - **Iteration scoring** — measuring AI output quality against stories as a feedback loop for methodology improvement
 - **The separation of sycophancy from validation** — methodology documents and AI outputs must be challenged, not just confirmed. Seek disconfirmation actively.
+- **The smoke test gate** — verifying that the existing test suite passes before beginning implementation of a new story, so infrastructure failures are caught before they contaminate story sessions
+- **The out-of-scope fix exception** — a narrow, documented exception allowing AI to fix pre-existing infrastructure blockers autonomously when three conditions are met: the fix is unambiguously correct, it is the minimum change necessary, and it is fully documented in the session report. The conditions and the exception are methodology; the specific CLAUDE.md rule that encodes it is implementation.
 
 ---
 
@@ -51,6 +53,7 @@ This section is an honest log of places where the implementation bled into the m
 | Story format | Markdown files with specific section headers were designed with Claude's context window behavior in mind | Claude's tendency to anchor on structured headers influenced what "a good story" looks like |
 | Iteration scoring | The scoring approach assumes test output Claude Code can read and reason about | Designed around Claude Code's ability to run and interpret test results |
 | Journal / [META] tagging | The tagging convention emerged from working in Claude.ai chat and wanting to flag methodology-level observations | May not translate meaningfully outside a chat-based workflow |
+| Out-of-scope fix exception | The specific wording of the exception ("ask first" rule with narrow carve-out) was shaped by Claude Code's workflow conventions and the CLAUDE.md file safety rules | The underlying principle (document autonomous deviations; don't paper them over) is AI-agnostic, but the rule's framing assumes a project briefing document mechanism |
 
 *This table should be updated as new contamination is identified. Identifying contamination is a feature, not a failure.*
 

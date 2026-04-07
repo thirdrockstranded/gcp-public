@@ -1,5 +1,7 @@
-# User Story Template — v0.2
+# User Story Template — v0.3
 
+> Changes from v0.2: Added `## Environment / Testing Prerequisites` guidance on exact version pinning for browser automation dependencies and Vite `allowedHosts` behavior in Docker networks. These were identified as load-bearing infrastructure concerns during US-001 (Quiltix case study). See META-2, META-3 in the US-001 session document.
+>
 > Changes from v0.1: Added `## Definition of Done`, `## Environment / Testing Prerequisites`, and AC-to-test mapping convention in `## Test Coverage`. These sections were identified as necessary during the Quiltix design phase (see journal 2026-03-17, 2026-03-19).
 
 ---
@@ -48,6 +50,13 @@ Copy everything below the horizontal rule into a new story file.
 - [Any seed data, fixtures, or preconditions required?]
 - [Single command to bring up the test environment]
 
+> **Bootstrap and dependency pinning notes (apply to all projects using Playwright in Docker):**
+>
+> - Browser automation dependencies (`@playwright/test`, `playwright`) must be pinned to **exact versions** (e.g. `1.46.0`), not semver ranges (e.g. `^1.46.0`). A range resolves to the latest at install time, which will mismatch the browser binaries in a versioned base image and cause crashes or SIGSEGVs.
+> - Vite 5.4+ enforces `allowedHosts` by default. Any Playwright container connecting to a Vite dev server over a Docker network (e.g. `http://frontend:5173`) will be rejected with a host header error unless `server.allowedHosts: true` is set in `vite.config.ts`. This is not a story-level concern — it belongs in the bootstrap story's acceptance criteria or in `CLAUDE.md`.
+>
+> *Source: US-001 session document, Quiltix case study (META-2, META-3).*
+
 ## Test Coverage
 
 Map every AC to at least one named test. No unmapped ACs.
@@ -82,6 +91,8 @@ Before handing a story to implementation, verify:
 - [ ] Any qualitative AC is either made specific or marked `[MANUAL]`
 - [ ] Definition of Done is filled in
 - [ ] Environment / Testing Prerequisites is filled in (if E2E or integration tests present)
+- [ ] If E2E tests use Playwright in Docker: browser automation deps are pinned to exact versions
+- [ ] If E2E tests run against a Vite dev server in Docker: `server.allowedHosts: true` is confirmed in `vite.config.ts`
 - [ ] Story can be implemented without requiring changes to VISION.md or other stories
 
 If any item is unchecked, the story is not ready for implementation.
